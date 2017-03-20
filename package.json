@@ -1,6 +1,6 @@
 {
   "name": "react-refect",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -23,6 +23,7 @@
   "author": "DT",
   "license": "MIT",
   "dependencies": {
+    "refect": "^0.1.0-alpha.0",
     "hoist-non-react-statics": "^1.2.0",
     "react-redux": "^5.0.1"
   },
@@ -35,7 +36,6 @@
     "*.md"
   ],
   "devDependencies": {
-    "refect": "^0.1.0-alpha.0",
     "babel": "^6.5.2",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",
