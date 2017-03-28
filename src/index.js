@@ -57,7 +57,7 @@ export default function refect(options) {
         storeState: initialState,
       };
 
-      this.namespace = getNamespace(parentNamespace, options.defaultNamespace || props.namespace);
+      this.namespace = getNamespace(parentNamespace, props.namespace || options.defaultNamespace);
     }
 
     getChildContext() {
