@@ -123,27 +123,21 @@ export default function refect(options) {
   return hoistStatics(RefectComponent, view);
 }
 
-export function refectLocal(options) {
-  const View = refect(options);
-
-  function RefectLocalComponent(props) {
-    const { storeConfig = {}, ...restProps } = props;
-    const store = createRefectStore(storeConfig);
+export function refectRoot(options) {
+  function RefectRootComponent(props) {
+    const { children, ...rest } = props;
+    const store = createRefectStore({
+      ...options,
+      ...rest,
+    });
 
     return (
       <Provider store={store} >
-        {React.createElement(View, restProps)}
+        {children}
       </Provider>
     );
   }
 
-  RefectLocalComponent.contextTypes = {
-    store: storeShape,
-  };
-  const wrappedComponentName = options.view.displayName || options.view.name || 'Component';
-
-  RefectLocalComponent.displayName = `Refect(${wrappedComponentName})`;
-
-  return hoistStatics(RefectLocalComponent, View);
+  return RefectRootComponent;
 }
 

@@ -1,8 +1,9 @@
 {
   "name": "react-refect",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "",
   "main": "lib/index.js",
+  "typings": "./index.d.ts",
   "scripts": {
     "dev": "babel src --out-dir lib -w",
     "build": "babel src --out-dir lib",
@@ -24,7 +25,7 @@
   "author": "DT",
   "license": "MIT",
   "dependencies": {
-    "refect": "^0.1.0-alpha.0",
+    "refect": "^0.1.0-alpha.6",
     "hoist-non-react-statics": "^1.2.0",
     "react-redux": "^5.0.1"
   },
@@ -37,6 +38,7 @@
     "*.md"
   ],
   "devDependencies": {
+    "@types/react": "^15.0.20",
     "babel": "^6.5.2",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.21.0",
