@@ -1,6 +1,6 @@
 {
   "name": "react-refect",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "description": "",
   "main": "lib/index.js",
   "typings": "./index.d.ts",
@@ -35,7 +35,8 @@
   "files": [
     "src",
     "lib",
-    "*.md"
+    "*.md",
+    "index.d.ts"
   ],
   "devDependencies": {
     "@types/react": "^15.0.20",
