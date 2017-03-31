@@ -55,6 +55,7 @@ export default function refect(options) {
 
       this.state = {
         storeState: initialState,
+        storeAllState: this.store.getState(),
       };
 
       this.namespace = getNamespace(parentNamespace, props.namespace || options.defaultNamespace);
@@ -81,10 +82,12 @@ export default function refect(options) {
 
     componentDidMount() {
       this.unSubscribe = this.store.subscribe(() => {
-        const storeState = get(this.store.getState(), this.namespace);
+        const storeAllState = this.store.getState();
+        const storeState = get(storeAllState, this.namespace);
 
         this.setState({
           storeState,
+          storeAllState,
         });
       });
 
@@ -104,10 +107,10 @@ export default function refect(options) {
     }
 
     render() {
-      const { storeState } = this.state;
+      const { storeState, storeAllState } = this.state;
 
       const finalProps = {
-        ...mapStateToProps(storeState, this.props),
+        ...mapStateToProps(storeState, this.props, storeAllState),
         actions: this.actions,
         dispatch: this.store.dispatch,
       };
