@@ -57,7 +57,7 @@ export default function refect(options) {
     };
 
     static defaultProps = {
-      namespace: '',
+      namespace: options.defaultNamespace,
     };
 
     static uuid = Math.random();
@@ -75,7 +75,7 @@ export default function refect(options) {
         storeAllState: this.store.getState(),
       };
 
-      this.namespace = getNamespace(parentNamespace, props.namespace || options.defaultNamespace);
+      this.namespace = getNamespace(parentNamespace, props.namespace);
     }
 
     getChildContext() {
