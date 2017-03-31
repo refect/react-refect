@@ -114,7 +114,7 @@ export default function refect(options) {
     }
 
     shouldComponentUpdate(props, state) {
-      const finalProps = (state.storeState, props, state.storeAllState);
+      const finalProps = mapStateToProps(state.storeState, props, state.storeAllState);
       const thisFinalProps = mapStateToProps(this.state.storeState,
         this.props, this.state.storeAllState);
 
