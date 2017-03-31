@@ -22,6 +22,23 @@ function getNamespace(parentNamespace, namespace) {
   return `${parentNamespace}.${namespace}`;
 }
 
+function shallowEqual(a, b) {
+  /* eslint-disable no-restricted-syntax */
+  for (const key in a) {
+    if ({}.hasOwnProperty.call(a, key) && (!{}.hasOwnProperty.call(b, key) || a[key] !== b[key])) {
+      return false;
+    }
+  }
+
+  for (const key in b) {
+    if ({}.hasOwnProperty.call(b, key) && !{}.hasOwnProperty.call(a, key)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export default function refect(options) {
   const { mapStateToProps = defaultMapStateToProps, view, initialState } = options;
 
@@ -94,6 +111,14 @@ export default function refect(options) {
       if (this.actions.mount) {
         this.actions.mount(this.props);
       }
+    }
+
+    shouldComponentUpdate(props, state) {
+      const finalProps = (state.storeState, props, state.storeAllState);
+      const thisFinalProps = mapStateToProps(this.state.storeState,
+        this.props, this.state.storeAllState);
+
+      return !shallowEqual(finalProps, thisFinalProps);
     }
 
     componentWillUnmount() {
