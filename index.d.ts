@@ -17,6 +17,6 @@ interface RefectOptions {
   mapStateToProps?: any
 }
 
-export function refectRoot(options?: RefectStoreOption): React.Component<RefectStoreOption, any>;
+export function refectRoot(options?: RefectStoreOption): any;
 
 export default function refect<Props>(options: RefectOptions): any;
