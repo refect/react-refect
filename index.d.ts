@@ -15,6 +15,7 @@ interface RefectOptions {
   tasks?: any
   initialState?: any
   mapStateToProps?: any
+  defaultProps?: any
 }
 
 export function refectRoot(options?: RefectStoreOption): any;

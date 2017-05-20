@@ -40,7 +40,8 @@ function shallowEqual(a, b) {
 }
 
 export default function refect(options) {
-  const { mapStateToProps = defaultMapStateToProps, view, initialState } = options;
+  const { mapStateToProps = defaultMapStateToProps, view, initialState,
+    defaultProps = {} } = options;
 
   class RefectComponent extends Component {
     static contextTypes = {
@@ -58,6 +59,7 @@ export default function refect(options) {
 
     static defaultProps = {
       namespace: options.defaultNamespace,
+      ...defaultProps,
     };
 
     static uuid = Math.random();
