@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import hoistStatics from 'hoist-non-react-statics';
 import { Provider } from 'react-redux';
 import configureRefect, { createRefectStore } from 'refect';
-import { get, is } from 'refect/utils';
+import { get, is, deepBindActions } from 'refect/utils';
 
 const storeShape = PropTypes.shape({
   subscribe: PropTypes.func.isRequired,
@@ -12,14 +12,6 @@ const storeShape = PropTypes.shape({
 
 function defaultMapStateToProps(state, props) {
   return { ...props, ...state };
-}
-
-function getNamespace(parentNamespace, namespace) {
-  if (!parentNamespace) {
-    return namespace;
-  }
-
-  return `${parentNamespace}.${namespace}`;
 }
 
 function shallowEqual(a, b) {
@@ -40,67 +32,41 @@ function shallowEqual(a, b) {
 }
 
 export default function refect(options) {
-  const { mapStateToProps = defaultMapStateToProps, view, initialState } = options;
+  const { mapStateToProps = defaultMapStateToProps, view, namespace } = options;
 
   class RefectComponent extends Component {
     static contextTypes = {
       store: storeShape,
-      namespace: PropTypes.string,
     };
-
-    static childContextTypes = {
-      namespace: PropTypes.string,
-    };
-
-    static propTypes = {
-      namespace: PropTypes.string,
-    };
-
-    static defaultProps = {
-      namespace: options.defaultNamespace,
-    };
-
-    static uuid = Math.random();
-
-    static options = options.options;
 
     constructor(props, context) {
       super(props, context);
       this.store = context.store;
 
-      const parentNamespace = context.namespace || '';
+      const storeAllState = this.store.getState();
+      const storeState = get(storeAllState, namespace);
+
+      // 获得当前 namespace 下的 action 与所有 action
+      this.actions = deepBindActions(this.store.getActions(namespace), this.store.dispatch);
+      this.allActions = deepBindActions(this.store.getActions(), this.store.dispatch);
 
       this.state = {
-        storeState: initialState,
-        storeAllState: this.store.getState(),
-      };
-
-      this.namespace = getNamespace(parentNamespace, props.namespace);
-    }
-
-    getChildContext() {
-      return {
-        namespace: this.namespace,
+        storeState,
+        storeAllState,
       };
     }
 
     componentWillMount() {
-      this.actions = configureRefect({
-        options,
-        namespace: this.namespace,
-        store: this.store,
-        uuid: RefectComponent.uuid,
-      });
-
       if (this.actions.willMount) {
-        this.actions.willMount(this.props);
+        this.actions.willMount(this.getFinalProps());
       }
     }
 
     componentDidMount() {
+      // 监听 redux store 变化
       this.unSubscribe = this.store.subscribe(() => {
         const storeAllState = this.store.getState();
-        const storeState = get(storeAllState, this.namespace);
+        const storeState = get(storeAllState, namespace);
 
         this.setState({
           storeState,
@@ -109,7 +75,7 @@ export default function refect(options) {
       });
 
       if (this.actions.mount) {
-        this.actions.mount(this.props);
+        this.actions.mount(this.getFinalProps());
       }
     }
 
@@ -122,25 +88,26 @@ export default function refect(options) {
     }
 
     componentWillUnmount() {
-      const actions = this.actions;
-
       this.unSubscribe();
 
       if (this.actions.unMount) {
-        this.actions.unMount(this.props);
+        this.actions.unMount(this.getFinalProps());
       }
     }
 
-    render() {
+    getFinalProps() {
       const { storeState, storeAllState } = this.state;
 
-      const finalProps = {
+      return {
         ...mapStateToProps(storeState, this.props, storeAllState),
         actions: this.actions,
+        allActions: this.allActions,
         dispatch: this.store.dispatch,
       };
+    }
 
-      return React.createElement(view, finalProps);
+    render() {
+      return React.createElement(view, this.getFinalProps());
     }
   }
 
@@ -152,11 +119,23 @@ export default function refect(options) {
 }
 
 export function refectRoot(options) {
+  const { storeAll } = options;
   function RefectRootComponent(props) {
     const { children, ...rest } = props;
     const store = createRefectStore({
       ...options,
       ...rest,
+    });
+
+    storeAll.forEach((componentStore) => {
+      const { namespace } = componentStore;
+
+      configureRefect({
+        options: componentStore,
+        namespace,
+        store,
+        uuid: Math.random(),
+      });
     });
 
     return (
@@ -168,4 +147,3 @@ export function refectRoot(options) {
 
   return RefectRootComponent;
 }
-
