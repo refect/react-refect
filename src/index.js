@@ -39,6 +39,28 @@ function shallowEqual(a, b) {
   return true;
 }
 
+function getWrappedRefectComponent(WrappedComponent) {
+  return class HOC extends Component {
+    componentWillMount() {
+      if (!window.cards) {
+        window.cards = {};
+      }
+      window.cards[this.props.namespace] = this.props;
+    }
+    componentWillReceiveProps(nextProps) {
+      if (!window.cards) {
+        window.cards = {};
+      }
+      window.cards[nextProps.namespace] = nextProps;
+    }
+    render() {
+      return <div className="wrapped-refect-component">
+        <WrappedComponent {...this.props}/>
+      </div>
+    }
+  }
+}
+
 export default function refect(options) {
   const { mapStateToProps = defaultMapStateToProps, view, initialState,
     defaultProps = {} } = options;
@@ -150,7 +172,12 @@ export default function refect(options) {
 
   RefectComponent.displayName = `Refect(${wrappedComponentName})`;
 
-  return hoistStatics(RefectComponent, view);
+  // 仅在 sudo 环境下
+  let wrappedRefectComponent = RefectComponent;
+  if (window.location.host === 'sudo.sycm.taobao.com') {
+    wrappedRefectComponent = getWrappedRefectComponent(RefectComponent);
+  }
+  return hoistStatics(wrappedRefectComponent, view);
 }
 
 export function refectRoot(options) {
