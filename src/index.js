@@ -70,20 +70,12 @@ export default function refect(options) {
 
     constructor(props, context) {
       super(props, context);
-      console.log(ReactReduxContext.Consumer);
-      const Blue = <ReactReduxContext.Consumer>
-        {(context) => {
-          console.log('context',context);
-          return <span/>
-        }}
-      </ReactReduxContext.Consumer>
-
       const parentNamespace = context.namespace || '';
-      // this.store = context.store;
+      this.store = context.store;
 
       this.state = {
         storeState: initialState,
-        // storeAllState: this.store.getState(),
+        storeAllState: this.store.getState(),
         blue: Blue,
       };
 
