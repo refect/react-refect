@@ -1,8 +1,10 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import hoistStatics from 'hoist-non-react-statics';
 import { Provider } from 'react-redux';
 import configureRefect, { createRefectStore } from 'refect';
 import { get, is } from 'refect/utils';
+import { ReactReduxContext } from 'react-redux';
 
 const storeShape = PropTypes.shape({
   subscribe: PropTypes.func.isRequired,
@@ -68,13 +70,21 @@ export default function refect(options) {
 
     constructor(props, context) {
       super(props, context);
-      this.store = context.store;
+      console.log(ReactReduxContext.Consumer);
+      const Blue = <ReactReduxContext.Consumer>
+        {(context) => {
+          console.log('context',context);
+          return <span/>
+        }}
+      </ReactReduxContext.Consumer>
 
       const parentNamespace = context.namespace || '';
+      // this.store = context.store;
 
       this.state = {
         storeState: initialState,
-        storeAllState: this.store.getState(),
+        // storeAllState: this.store.getState(),
+        blue: Blue,
       };
 
       this.namespace = getNamespace(parentNamespace, props.namespace);
@@ -142,7 +152,15 @@ export default function refect(options) {
         dispatch: this.store.dispatch,
       };
 
-      return React.createElement(view, finalProps);
+      return <span>
+        <ReactReduxContext.Consumer>
+          {(context) => {
+            console.log('context', context);
+            return <span/>
+          }}
+        </ReactReduxContext.Consumer>
+        {React.createElement(view, finalProps)}
+      </span>;
     }
   }
 

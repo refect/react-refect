@@ -25,9 +25,10 @@
   "author": "DT",
   "license": "MIT",
   "dependencies": {
-    "refect": "^1.0.0",
     "hoist-non-react-statics": "^1.2.0",
-    "react-redux": "^6.0.0"
+    "prop-types": "^15.6.2",
+    "react-redux": "^6.0.0",
+    "refect": "^1.0.0"
   },
   "peerDependencies": {
     "react": "^16.0.0"
