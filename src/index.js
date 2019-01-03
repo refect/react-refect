@@ -45,16 +45,19 @@ export default function refect(options) {
   const { mapStateToProps = defaultMapStateToProps, view, initialState,
     defaultProps = {} } = options;
 
+  class ContextWrapper extends Component {
+    render() {
+      return (
+        <ReactReduxContext.Consumer>
+          {(context) => {
+            return <RefectComponent {...this.props} context={context}/>
+          }}
+        </ReactReduxContext.Consumer>
+      )
+    }
+  }
+
   class RefectComponent extends Component {
-    static contextTypes = {
-      store: storeShape,
-      namespace: PropTypes.string,
-    };
-
-    static childContextTypes = {
-      namespace: PropTypes.string,
-    };
-
     static propTypes = {
       namespace: PropTypes.string,
     };
@@ -68,24 +71,18 @@ export default function refect(options) {
 
     static options = options.options;
 
-    constructor(props, context) {
-      super(props, context);
+    constructor(props) {
+      super(props);
+      const context = props.context;
       const parentNamespace = context.namespace || '';
       this.store = context.store;
 
       this.state = {
         storeState: initialState,
         storeAllState: this.store.getState(),
-        blue: Blue,
       };
 
       this.namespace = getNamespace(parentNamespace, props.namespace);
-    }
-
-    getChildContext() {
-      return {
-        namespace: this.namespace,
-      };
     }
 
     componentWillMount() {
@@ -144,23 +141,15 @@ export default function refect(options) {
         dispatch: this.store.dispatch,
       };
 
-      return <span>
-        <ReactReduxContext.Consumer>
-          {(context) => {
-            console.log('context', context);
-            return <span/>
-          }}
-        </ReactReduxContext.Consumer>
-        {React.createElement(view, finalProps)}
-      </span>;
+      return React.createElement(view, finalProps);
     }
   }
 
   const wrappedComponentName = view.displayName || view.name || 'Component';
 
-  RefectComponent.displayName = `Refect(${wrappedComponentName})`;
+  ContextWrapper.displayName = `Refect(${wrappedComponentName})`;
 
-  return hoistStatics(RefectComponent, view);
+  return hoistStatics(ContextWrapper, view);
 }
 
 export function refectRoot(options) {
