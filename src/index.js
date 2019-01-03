@@ -49,9 +49,7 @@ export default function refect(options) {
     render() {
       return (
         <ReactReduxContext.Consumer>
-          {(context) => {
-            return <RefectComponent {...this.props} context={context}/>
-          }}
+          {(context) => <RefectComponent {...this.props} context={context}/>}
         </ReactReduxContext.Consumer>
       )
     }
