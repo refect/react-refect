@@ -13,7 +13,7 @@ const storeShape = PropTypes.shape({
 });
 
 function defaultMapStateToProps(state, props) {
-  return { ...state, ...props };
+  return { ...props, ...state };
 }
 
 function getNamespace(parentNamespace, namespace) {
